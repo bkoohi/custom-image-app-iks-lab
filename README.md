@@ -78,19 +78,55 @@ For tools installation, please follow instructions in this link: https://cloud.i
 
 
 ### 5- Install, Set Up, and Log In
-The container image for the application as already been built and pushed to a public Container Registry. In this section you will deploy the starter application using Helm. Helm helps you manage Kubernetes applications through Helm Charts, which helps define, install, and upgrade even the most complex Kubernetes application.
 
-1- Ensure that you're targeting the correct IBM Cloud Container Registry region:
+1. Start a shell in your local laptop/jump VM
+
+2. If IBM Cloud CLIs are not installed in your laptop/jump VM then install the IBM Cloud CLI: https://cloud.ibm.com/docs/containers?topic=containers-cs_cli_install
+
+4. If Docker/Podman not installed in your laptop/jump VM then install the Docker CLI: https://docs.docker.com/engine/install/
+
+5. Install the Container Registry plug-in.
+```
+ibmcloud plugin install container-registry -r 'IBM Cloud'
+```
+6. Log in to your IBM Cloud account.
+```
+ibmcloud login -a https://cloud.ibm.com --sso
+```
+8. Ensure that you're targeting the correct IBM Cloud Container Registry region:
 
 ```
 ibmcloud cr region-set global
 ```
-
-2- Choose a name for your first namespace, and create that namespace. Use this namespace for the rest of the Quick Start.
+9. Choose a name for your first namespace, and create that namespace. Use this namespace for the rest of the Quick Start.
 ```
 ibmcloud cr namespace-add <your_initial>-hello-world
 ```
 
+### 6- Push the image to your private registry
+
+1. Log your local Docker daemon into the IBM Cloud Container Registry. Ensure your Docker or Podman is running in your env.
+```
+ibmcloud cr login
+```
+2.  Pull a test image from Docker Hub.
+```
+podman pull hello-world
+docker pull hello-world
+```
+
+Output:
+```
+podman pull hello-world
+Trying to pull docker.io/library/hello-world:latest...
+Getting image source signatures
+Copying blob sha256:2db29710123e3e53a794f2694094b9b4338aa9ee5c40b930cb8063a1be392c54
+Copying config sha256:feb5d9fea6a5e9606aa995e879d862b825965ba48de054caab5ef356dc6b3412
+Writing manifest to image destination
+Storing signatures
+feb5d9fea6a5e9606aa995e879d862b825965ba48de054caab5ef356dc6b3412
+```
+4.  
 5- You can either use the default Kubernetes namespace or create a new namespace for this application.
 
 If you wish to use the default Kubernetes namespace, run the below command to set an environment variable
