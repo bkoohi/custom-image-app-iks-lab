@@ -126,8 +126,40 @@ Writing manifest to image destination
 Storing signatures
 feb5d9fea6a5e9606aa995e879d862b825965ba48de054caab5ef356dc6b3412
 ```
-4.  
-5- You can either use the default Kubernetes namespace or create a new namespace for this application.
+4. Choose a repository and tag by which you can identify the image. Use the same repository and tag for the rest of this Quick Start.
+```
+docker tag hello-world icr.io/bk-hello-world/hello-world:V1
+podman tag hello-world icr.io/bk-hello-world/hello-world:V1
+```
+5- List images to validate the tag:
+```
+podman images
+docker images
+```
+
+6- Push the image.
+```
+podman push icr.io/bk-hello-world/hello-world:V1
+```
+
+7- Verify that your image is in your private registry.
+```
+ibmcloud cr image-list
+```
+
+Output:
+```
+Listing images...
+
+Repository                            Tag      Digest         Namespace           Created        Size     Security status   
+icr.io/bk-hello-world/hello-world     V1       239de6dd745e   bk-hello-world      7 months ago   2.6 kB   Unsupported OS   
+icr.io/code-engine-space/mean-stack   latest   25ace32e10a5   code-engine-space   3 weeks ago    52 MB    No Issues   
+
+OK
+```
+
+### 7- Deploy hello-world from Container Registery in IKS clusrter ( to-be-completed )
+
 
 If you wish to use the default Kubernetes namespace, run the below command to set an environment variable
 ```
