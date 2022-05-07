@@ -160,43 +160,35 @@ OK
 
 ### 7- Deploy hello-world from Container Registery in IKS clusrter ( to-be-completed )
 
+1- Identify your cluster:
+```
+ibmcloud ks cluster ls
+```
 
-If you wish to use the default Kubernetes namespace, run the below command to set an environment variable
+2- Initialize the variable with the cluster ID
+```
+export MYCLUSTER=<CLUSTER_ID>
+```
+
+3- Initialize the kubectl cli environment
+```
+ibmcloud ks cluster config --cluster $MYCLUSTER
+```
+
+4- If you wish to use the default Kubernetes namespace, run the below command to set an environment variable
 ```
 export KUBERNETES_NAMESPACE=default
 ```
 
-6- Install the hello-world app:
+6- Install the hello-world app for IBM Cloud Registery:
+
 ```
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/name: load-balancer-example
-  name: hello-world
-spec:
-  replicas: 5
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: load-balancer-example
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: load-balancer-example
-    spec:
-      containers:
-      - image: gcr.io/google-samples/node-hello:1.0
-        name: hello-world
-        ports:
-        - containerPort: 8080
-```
-```
-kubectl apply -f https://k8s.io/examples/service/load-balancer-example.yaml
+kubectl create deployment helloworld --image=icr.io/bk-hello-world/hello-world
 ```
 7- Display hello-world app deployment:
 ```
-kubectl get deployments hello-world
-kubectl describe deployments hello-world
+kubectl get deployments helloworld
+kubectl describe deployments helloworld
 ```
 
 8- Display hello-world ReplicaSet objects:
@@ -205,51 +197,39 @@ kubectl get replicasets
 kubectl describe replicasets
 ```
 
-### 7-  Use the IBM-provided domain for your cluster
-Paid clusters come with an IBM-provided domain. This gives you a better option to expose applications with a proper URL and on standard HTTP/S ports.
-
-Create a Service object that exposes the hello-world deployment:
-
-![plot](https://cloud.ibm.com/docs-content/v1/content/d7719795b28ea8f7b7514e07e872e2cc3e8e9c6f/solution-tutorials/images/solution2/Ingress.png)
-
-7.1 Identify your IBM-provided Ingress domain
+9- Deploy a Kubernetes service for hello-world app: 
 ```
-ibmcloud ks cluster get --cluster $MYCLUSTER
-```
-Deploy the service:
-```
-kubectl expose deployment hello-world --type=LoadBalancer --name=my-service
+ kubectl expose deployment helloworld --type=LoadBalancer --name=helloworld --port 3000
 ```
 
 7.2 Display Kubernetes services deployed in previous step:
 ```
-kubectl get services my-service
+kubectl describe service helloworld
 ```
 It may take up to 5 min to update Loadbalancer in IBM Cloud with new service. As an example of output:
 ```
-Name:                     my-service
+Name:                     helloworld
 Namespace:                default
-Labels:                   app.kubernetes.io/name=load-balancer-example
+Labels:                   app=helloworld
 Annotations:              <none>
-Selector:                 app.kubernetes.io/name=load-balancer-example
+Selector:                 app=helloworld
 Type:                     LoadBalancer
 IP Families:              <none>
-IP:                       172.21.72.4
-IPs:                      172.21.72.4
-LoadBalancer Ingress:     f17a4a30-us-south.lb.appdomain.cloud
-Port:                     <unset>  8080/TCP
-TargetPort:               8080/TCP
-NodePort:                 <unset>  32691/TCP
-Endpoints:                172.17.32.206:8080,172.17.32.207:8080,172.17.40.205:8080 + 2 more...
+IP:                       172.21.18.237
+IPs:                      172.21.18.237
+LoadBalancer Ingress:     a1c85bf6-us-south.lb.appdomain.cloud
+Port:                     <unset>  3000/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  31190/TCP
+Endpoints:                
 Session Affinity:         None
 External Traffic Policy:  Cluster
 Events:
-  Type    Reason                           Age   From                Message
-  ----    ------                           ----  ----                -------
-  Normal  EnsuringLoadBalancer             15m   service-controller  Ensuring load balancer
-  Normal  EnsuredLoadBalancer              15m   service-controller  Ensured load balancer
-  Normal  CloudVPCLoadBalancerNormalEvent  10m   ibm-cloud-provider  Event on cloud load balancer my-service for service default/my-service with UID d3026d55-587d-434d-b318-fecd19e32193: The VPC load balancer that routes requests to this Kubernetes LoadBalancer service is currently online/active.
-  
+  Type    Reason                           Age    From                Message
+  ----    ------                           ----   ----                -------
+  Normal  EnsuringLoadBalancer             7m38s  service-controller  Ensuring load balancer
+  Normal  EnsuredLoadBalancer              7m15s  service-controller  Ensured load balancer
+  Normal  CloudVPCLoadBalancerNormalEvent  3m11s  ibm-cloud-provider  Event on cloud load balancer helloworld for service default/helloworld with UID d93214ac-3db6-492e-a260-a29c49e2cd8b: The VPC load balancer that routes requests to this Kubernetes LoadBalancer service is currently online/active.
 ```
 7.5 Use the loadbalancer in "LoadBalancer Ingress:" field and HTTP port in "TargetPort:". Open your application in a browser at https://"LoadBalancer Ingress:"TargetPort:". Output display should be:
 ```
